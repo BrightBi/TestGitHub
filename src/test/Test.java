@@ -11,4 +11,5 @@ public class Test {
         System.out.println(info);
     }
     // this in master branch
+    // this in TestMerge branch
 }
