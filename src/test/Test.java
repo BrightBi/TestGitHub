@@ -10,6 +10,4 @@ public class Test {
     public void printer(String info) {
         System.out.println(info);
     }
-    // this in master branch
-    // this in TestMerge branch
 }
