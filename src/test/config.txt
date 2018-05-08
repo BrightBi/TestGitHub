@@ -1,3 +1,424 @@
-test
-test
-tttt
+默认情况 $ 是 jQuery 的简写形式
+
+window.onload 与 $(document).ready(function () {alert("Hi")});区别
+a window.onload 在网页内容全部加载完成之后执行，且只能绑定一个函数（如果绑定多个函数，只执行最后一个）
+b $(document).ready 在 DOM 结构绘制完毕就执行，可以绑定的多个函数（顺序执行）
+c $(window).load 等价于 window.onload 在网页内容全部加载完成之后执行
+d $(指定元素).load 在元素加载完成之后执行
+
+$(document).ready(function () { });等价于 $(function () { });等价于 $().ready(function () { });
+
+jQuery 对象和 DOM 对象（在操作一个对象时候要清楚他是 jQuery 的还是 DOM 的，各自对象只能使用各自的方法）
+DOM 对象是指通过 javascript 的 getElementsByTagName，getElementById 获取的元素。获取到的这些元素可以使用 javascript 的原生方法，如 innerHTML 等
+jQuery 对象是指通过 jQuery 包装的 DOM 对象。这种 jQuery 对象就可以使用 jQuery 的各种方法
+
+jQuery 对象与 DOM 对象互转
+a jQuery 转 DOM
+        var $test = $('#test');    // jQuery 对象
+        var test = $test[0];       // DOM 对象
+        test = $test.get(0);       // DOM 对象
+b DOM 转 jQuery 
+        var test = getElementById("test");    // DOM 对象
+        var $test = $(test);                            // jQuery 对象
+
+jQuery 跟其他库冲突解决
+a jQuery 在其他库加载之后才加载
+        在所有库被使用之前调用 jQuery.noConflict(); 可以将 $ 的控制权交还给其他库，在此之后需要使用 jQuery('#test') 来正常使用 jQuery。
+        或者使用 var $myName = jQuery.noConflict(); 释放 $ 的控制权，之后可以使用 $myName('#test') 来正常使用 jQuery。
+a jQuery 在其他库加载之前加载
+        后续使用 jQuery('#test') 来正常使用 jQuery。$会正常被其他库使用，无需再做其他操作
+
+$() 永远都能获取对象，所以不能使用 if ($('#test')) 来判断是否获得了这个元素对象，应该使用 if ($('#test').length > 0) 或者 if ($('#test')[0]) 来判断是否得到某个对象
+
+$('#test') 选取 id 是 test 的元素
+$('.test') 选取所有 class 是 test 的元素
+$('p') 选取所有 <p> 元素
+$('#test, .test, p, span.myClass') 选取 id 是 test 和 class 是 test 和<p> 和 标签是<span> 且其 class 是 myClass 的元素集合
+<div id="test">div id test</div>
+<div>div no id</div>
+<div class="test">div class test</div>
+<p>p1</p>
+<p>p2</p>
+<span class="myClass">span class myClass</span>
+<span>span no class</span>
+
+$('div.myclass') 选取 class 是 myclass 的 div 元素
+<div>
+    <div class="myclass">div1</div>
+</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p class="myclass">outer</p>
+    <div>
+        <p>p</p>
+    </div>
+</div>
+<p>p</p>
+<div></div>
+
+$('div .myclass') 选取所有 div 元素，再找其所有子元素中 class 是 myclass 的元素
+<div>
+    <div class="myclass">div1</div>
+</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p class="myclass">outer</p>
+    <div>
+        <p>p</p>
+    </div>
+</div>
+<p>p</p>
+<div></div>
+
+$('div span') 选取 div 后代中所有 span 元素
+$('#test p');
+<div id="test">
+    <div>
+        <p>inner</p>
+    </div>
+    <p>outer</p>
+</div>
+<p>p1</p>
+<p>p2</p>
+
+$('div > span') 选取 div 中所有 span 子元素
+$('#test > p');
+<div id="test">
+    <div>
+        <p>inner</p>
+    </div>
+    <p>outer</p>
+</div>
+<p>p1</p>
+<p>p2</p>
+
+$('#test + p') 选取 id 为 test 元素的紧邻的下一个 p 元素（可以用 $('#test').next('p') 代替）
+<div id="test">
+    <p>outer</p>
+</div>
+<p>p</p>
+-----------------------------
+下面这个选不到元素，紧邻的是 span 不是 p
+<div id="test">
+    <p>outer</p>
+</div>
+<span>span</span>
+<p>p</p>
+
+$('#test ~ p') 选取 id 为 test 元素之后的所有 p 元素（可以用 $('#test').nextAll('p') 代替）
+<div id="test">
+    <p>outer</p>
+</div>
+<span>span</span>
+<p>p</p>
+
+$('#test').siblings('div') 选取 id 为 test 元素所有同辈 div 元素
+<div>before</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p>outer</p>
+</div>
+<p>p</p>
+<div>after</div>
+
+$('p:first') 选取所有 <p> 元素 中第一个 <p> 元素（冒号前后不能有空格）
+$('p:last') 选取所有 <p> 元素 中最后一个 <p> 元素（冒号前后不能有空格）
+$('p:even') 选取所有索引是偶数的 <p> 元素（冒号前后不能有空格）
+$('p:odd') 选取所有索引是奇数的 <p> 元素（冒号前后不能有空格）
+$('p:eq(3)') 选取所有索引是3的 <p> 元素（冒号前后不能有空格）
+$('p:gt(3)') 选取所有索引大于3的 <p> 元素（冒号前后不能有空格）
+$('p:lt(3)') 选取所有索引小于3的 <p> 元素（冒号前后不能有空格）
+$(':header') 选取所有标题元素（冒号前后不能有空格）
+$('div:animated') 选取所有正在执行动画的 <div> 元素（冒号前后不能有空格）
+$('p:not(.myClass)') 选取所有 class 不是 myClass 的 <p> 元素（冒号前后不能有空格，not 后面跟的是个选择器）
+$('p:contains("123")') 选取含有文本 123 的 <p> 元素（冒号前后不能有空格）
+$('p:empty') 选取空的 <p> 元素 既不含有子元素也不含有文本元素（冒号前后不能有空格）
+$('div:has(.myclass)') 选取的元素含有这样一个元素，这个元素的class = myclass （冒号前后不能有空格）
+<div>
+    <div class="myclass">div1</div>
+</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p>outer</p>
+</div>
+<p>p</p>
+<div>after</div>
+
+$('p:parent') 选取含有子元素或者文本元素的 <p> 元素（冒号前后不能有空格）
+$('p:hidden') 选取不可见的 <p> 元素（冒号前后不能有空格）
+$('p:visible') 选取可见的 <p> 元素（冒号前后不能有空格）
+$('div[id]') 选取带有属性 id 的 <div> 元素
+$('div[name=myName]') 选取属性 name 为 myName 的 <div> 元素
+$('div[name!=myName]') 选取属性 name 不是 myName 的 <div> 元素，没有 name 属性的 div 也会被选出
+$('div[name^=my]') 选取属性 name 以 my 开头 的 <div> 元素
+$('div[name$=my]') 选取属性 name 以 my 结束 的 <div> 元素
+$('div[name*=my]') 选取属性 name 含有 my 的 <div> 元素
+$('div[title][age=7][name=my]') 选取有属性 title，且属性 age 值为7，且属性 name 值是 my 的 <div> 元素
+$('div :first-child') 选取所有 <div> 元素，再对每个选取其第一个子元素
+<div>
+    <div class="myclass">div1</div>
+</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p>outer</p>
+    <div>
+        <p>p</p>
+    </div>
+</div>
+<p>p</p>
+<div></div>
+
+$('div :last-child') 选取所有 <div> 元素，再对每个选取其最后一个子元素
+$('div p:nth-child(3)') 选取所有 <div> 元素，再对每个选取索引是3的 <p> 元素（索引从1开始）
+$('div p:nth-child(even)') 选取所有 <div> 元素，再对每个选取索引是偶数 <p> 子元素
+$('div p:nth-child(odd)') 选取所有 <div> 元素，再对每个选取索引是奇数 <p> 子元素
+$('div p:nth-child(3n+1)') 选取所有 <div> 元素，再对每个选取索引是3的倍数余1的 <p> 元素（n从0开始）
+$('div p:only-child') 选取所有 <div> 元素，再对每个选取只有唯一 <p> 的 <p> 元素
+
+$('div :first') 选取所有 <div> 元素，对选出的元素的所有子元素选第一个
+<div>
+    <div class="myclass">div1</div>
+</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p>outer</p>
+</div>
+<p>p</p>
+<div></div>
+
+$('div:first') 选取所有 <div> 元素的第一个
+<div>
+    <div class="myclass">div1</div>
+</div>
+<p>p</p>
+<div id="test">
+    <div>inner</div>
+    <p>outer</p>
+</div>
+<p>p</p>
+<div></div>
+
+$('#form :enabled') 选取所有 id 是 form 的表单的所有可用元素
+$('#form input:disabled') 选取所有 id 是 form 的表单的所有不可用的 <input> 元素
+$('#form :checked') 选取所有 id 是 form 的表单的所有被选中的元素
+$('#form select:selected') 选取所有 id 是 form 的表单的所有被选中的 select 元素
+$('#form :input') 选取所有 id 是 form 的表单的所有 input textarea button select 元素
+$('#form :text') 选取所有 id 是 form 的表单的所有但行文本框元素
+$('#form :password') 选取所有 id 是 form 的表单的所有密码框元素
+$('#form :radio') 选取所有 id 是 form 的表单的所有单选框元素
+$('#form :checkbox') 选取所有 id 是 form 的表单的所有复选框元素
+$('#form :submit') 选取所有 id 是 form 的表单的所有提交按钮元素
+$('#form :image') 选取所有 id 是 form 的表单的所有图像按钮元素
+$('#form :reset') 选取所有 id 是 form 的表单的所有重置按钮元素
+$('#form :button') 选取所有 id 是 form 的表单的所有按钮元素
+$('#form :file') 选取所有 id 是 form 的表单的所有文件上传元素
+$('#form :reset') 选取所有 id 是 form 的表单的所有被选中的 select 元素
+
+如果 jQuery 使用 id 来查找元素，id 中出现了特殊符号（ # . ( [ ），需要使用转义字符 \\
+$('#test\\#w')
+<div id="test#w">
+    <div>inner</div>
+    <p>outer</p>
+</div>
+
+jQuery 元素获取元素的文本方法 $('#test').text();
+jQuery 元素获取元素的 title 属性值方法 $('#test').attr('title');
+jQuery 创建元素节点 var $li = $('<li></li>'); 返回值是 jQuery 元素
+jQuery 添加元素节点 $('#test').append($('<li></li>'));
+append 向元素内部尾部追加，A.append(B) B 追加到 A 中末尾
+appendTo 追加到元素内部尾部，A.appendTo(B) A 追加到 B 中末尾
+prepend 向元素内部首部添加，A.append(B) B 追加到 A 中首部
+prependTo 添加到元素内部首部，A.appendTo(B) A 追加到 B 中首部
+after 向元素之后添加，A.after(B) B 添加到 A 后面
+insertAfter 添加到元素之后，A.insertAfter(B) A 添加到 B 后面
+before 向元素之前添加，A.before(B) B 添加到 A 前面
+insertBefore 添加到元素之前，A.insertBefore(B) A 添加到 B 前面
+remove 删除节点，$('ul li').remove(); 删除 ul 中所有的 li，返回被删除的节点的引用
+remove 带筛选参数，$('ul li').remove('li[title != e]'); 删除 ul 中所有的 title 不等于 e 的 li，返回被删除节点的引用
+empty 清空节点，清空节点所有子节点
+clone 复制节点，不复制节点绑定事件；clone(true)，复制节点并复制绑定的事件
+replaceWith 使用指定节点替换当前节点，A.replaceWith(B); 用 B 替换 A。A 上之前绑定的事件消失
+replaceAll 使用当前节点替换指定节点，A.replaceAll(B); 用 A 替换 B。B 上之前绑定的事件消失
+wrap 用指定标签包裹当前元素，对每个每个匹配到的元素分别用指定元素包裹。A.wrap(B); 用 B 包裹 A
+wrapAll 用指定标签包裹当前元素，对匹配到的所有元素用一个指定元素包裹。匹配到的元素在文档结构中是分散的，会将所有元素统一抽取出来，用一个指定元素包裹，然后放回到匹配到的第一个元素的位置
+wrapInner 用指定标签包裹匹配到的元素的所有子元素
+$('#test').attr('title'); 获取 id 为 test 元素的 title 属性值
+$('#test').attr('title', 'new value'); 设置 id 为 test 元素的 title 属性值为 new value
+$('#test').attr({'title':'new value', 'name':'new name'}); 同时设置多个属性值
+$('#test').renoveAttr('title'); 删除 id 为 test 元素的 title 属性
+$('#test').addClass('myClass'); 给 id 为 test 元素追加样式 myClass
+$('#test').addClass('c1 c2'); 给 id 为 test 元素追加样式 c1 和 c2
+$('#test').removeClass('myClass'); 给 id 为 test 元素移除样式 myClass
+$('#test').removeClass('c1 c2'); 给 id 为 test 元素移除样式 c1 和 c2
+$('#test').removeClass(); 给 id 为 test 元素移除所有样式
+$('#test').hasClass('myClass'); 判断 id 为 test 元素是否有 myClass 样式
+ $('#test').is(":visible"); 判断 id 为 test 元素是否可见
+$('#test').html(); 获取 id 为 test 元素内部的 html 内容
+$('#test').html('<li></li>'); 设置 id 为 test 元素内部的 html 内容为 <li></li>
+$('#test').text(); 获取 id 为 test 元素内部的文本内容
+$('#test').text('123'); 设置 id 为 test 元素内部的文本内容为 123
+$('#test').val(); 获取 id 为 test 元素的 value 值
+$('#test').val('123'); 设置 id 为 test 元素内部的 value 值为 123
+$('#test').children(); 获取 id 为 test 元素的所有子元素
+$('#test').next(); 获取 id 为 test 元素的紧邻的下一个同辈元素
+$('#test').prev(); 获取 id 为 test 元素的紧邻的上一个同辈元素
+$('#test').siblings(); 获取 id 为 test 元素的所有同辈元素
+$('#test').closest('li'); 获取 id 为 test 元素的最近的一个 li 元素。从当前元素开始，依次向父类查找
+$('#test').css('color'); 获取 id 为 test 元素的指定样式值
+$('#test').css('color', 'red'); 设置 id 为 test 元素的指定样式的值
+$('#test').css({'color':'red', 'fontSize':'18px'}); 设置 id 为 test 元素的多个指定样式值
+$('#test').height(); 获取 id 为 test 元素的高度
+$('#test').width(); 获取 id 为 test 元素的宽度
+var $offset = $('#test').offset(); $offset.top; $offset.left; 获取 id 为 test 元素在当前视窗的相对偏移
+var $position = $('#test').position(); $position.top; $position.left; 获取 id 为 test 元素相对最近一个 position 设置为 relative 或 absolute 的祖父节点相对偏移
+$('#textarea').scrollTop(); 获取 id 为 textarea 元素的滚动条距顶距离
+$('#textarea').scrollTop(100); 使 id 为 textarea 元素的滚动条滚动到距顶100距离处
+$('#textarea').scrollLeft(); 获取 id 为 textarea 元素的滚动条距左距离
+$('#textarea').scrollLeft(100); 使 id 为 textarea 元素的滚动条滚动到距左100距离处
+
+bind (type, data, fn); 参数1是事件类型；参数2作为 event.data 传入，可选参数；参数3是绑定的函数
+bind ('mouseover monseout', fn); 为 mouseover monseout 同时绑定 fn 函数
+hover (mouseenter, mouseleave); 模拟光标悬停，光标进入时执行 enter 函数，光标移出时执行 leave 函数
+toggle (fn1, fn2, fn3, ...); 鼠标每次点击元素，顺次循环调用绑定函数；元素直接调用 toggle () 会切换显隐状态
+bind ('click', function (event) {event.stopPropagation();}); stopPropagation 阻止事件继续冒泡
+bind ('click', function (event) {event.preventDefault();}); preventDefault 阻止事件默认行为，如超链接跳转
+bind ('click', function (event) {return false;}); 在事件处理函数中返回 false 会阻止事件默认行为和冒泡
+event.type 事件类型 （event 是事件处理函数中的入参）
+event.target 触发事件的元素 （event 是事件处理函数中的入参）
+event.relatedTarget 触发事件的关联元素 （event 是事件处理函数中）
+event.pageX event.pageY 光标相对于页面的 x y 坐标 （event 是鼠标事件处理函数中的入参）
+event.which 鼠标的左中右键 （event 是鼠标事件处理函数中的入参）
+event.metaKey 检测 ctrl （event 是事件处理函数中的入参）
+event.originalEvent 指向原始的事件对象（event 是事件处理函数中的入参）
+unbind (type, fn); 参数1是要移除的事件类型；参数2要移除的函数
+unbind (); 移除元素上所有事件
+unbind ('click'); 移除元素上所有 click 事件
+unbind ('click', myFunction); 移除元素上为 click 事件绑定的 myFunction 函数
+one (type, data, fn); 与 bind 类似，不同点在于绑定的函数只执行一次，随后就被移除
+trigger (type, data); 参数1是要触发的事件类型；参数2以数组参数传入事件处理函数
+trigger ('click'); 触发 click 事件
+trigger ('my', ['name', 'age']); 触发自定义事件，并传入参数 name 和 age
+bind ('my', parameter1, parameter2); 监听自定义事件 my，和入参 name 与 age
+triggerHandler ('focus'); 触发 focus 事件，不触发浏览器聚焦行为（triggerHandler触发事件，但不触发浏览器行为）
+$('#test').bind ('event1.my', fn1); $('#test').bind ('event2.my', fn2); $('#test').bind ('event3', fn3); 
+前两个事件类型用命名空间规范起来，unbind ('.my'); 移除元素上所有 my 命名空间的事件，即衣橱了前两个注册的事件监听，只剩下 event3 事件还在监听
+hide (); 隐藏元素 （display 样式设置成 none，并会记住 display 之前值是什么）
+show (); 显示元素
+
+$('#textarea').load(url, parameter, callback); Ajax 请求，参数1是url，参数2是传出的参数，参数3是回调函数
+$('#textarea').load('test.html', {name : 'my', age : 7}, callback); id 是 textarea 的元素内会填充 Ajax 请求返回的数据
+$('#textarea').load(url, parameter, callback); 使用 post 方式；$('#textarea').load(url, callback); 使用 get 方式
+load 的回调函数参数 callback(response, status, XMLHttpRequest) 参数1是返回内容， 参数2是请求状态，参数3是XMLHttpRequest
+load 的回调函数只要请求完成就会被调用，不管请求失败还是成功。常用于获取服务器的静态资源，如 静态 html 文件
+
+$.get(url, data, callback, type); 参数1是url，参数2是出参，参数3是回调函数，参数4是服务器返回内容格式（xml,html,text,json,script,_default）
+get 的回调函数参数 callback(response, status) 参数1是返回内容， 参数2是请求状态（success，error，notmodified，timeout）
+只有当数据返回成功，回调函数才被调用
+
+$.post(url, data, callback, type); 类似 get，注意参数传递的方式，以及参数的大小
+
+动态加载 script
+$('<script src="test.js" type="text/javascript"></script>').appenTo('head');
+$.getScript("test.js");
+$.getScript(url, callback); 参数1是 script 文件的 url，参数2是回调函数
+
+动态加载 JSON
+$.getJSON(url, callback);
+getJSON 回调函数 callback(data) 参数是 JSON 对象
+
+$.each(data, function (member/index, value){}); 参数1是对象或者数组，参数2是处理函数（处理函数参数1是对象的成员或者数组的索引，参数2是对应成员或者索引指向的具体值）
+
+$.ajax(options); jQuery 底层核心 AJAX 方法，参数 options 以 key/value 形式
+options : 
+{
+    url : '请求地址，默认是当前 url ',   
+    type : '请求类型（get post put delete）',   
+    timeout : 请求超时时间（单位是毫秒）会覆盖 $.ajaxSetup() 的全局变量,   
+    data : '请求参数，如果不是字符串会自动转换成字符串。如果是 get 会附在url之后发送出去。参数是对象的，必须以 key/value 形式{name : 'name', age : 7}',   
+    dataType: '预期服务器返回的数据类型(xml html script json jsonp text) 如果不指定，会根据 http 包 mime 返回 responseXML 或 responseText',   
+    beforeSend : 'function (XMLHttpRequest) {} 发送请求前调用的函数，XMLHttpRequest 是唯一参数，如果函数返回 false 则取消本次请求 ',   
+    complete : 'function (XMLHttpRequest, status) {this; // 调用本次 ajax 的 options} 请求完成时调用的函数，无论成功失败都调用。status 描述成功请求类型的字符串',   
+    success : 'function (data, status) {this; // 调用本次 ajax 的 options} 请求成功会调用。data 是由服务器返回并根据 dataType 处理过的数据，status 描述状态字符串',   
+    error : ''function (XMLHttpRequest, status, errorThrown) {this; // 调用本次 ajax 的 options} 请求失败会调用 status 是错误信息，errorThrown 是错误对象',   
+    global : '表示是否出发全局 ajax 事件，默认是 true '
+}
+
+$('#form').serialize(); 得到表单元素，并将其内部元素序列化，序列化后的字符串可以用于 ajax 请求的参数
+$('#form').serializeArray(); 得到表单元素，并将其内部元素序列化，序列化后生成 json
+$.param(obj); 将指定的对象或者数组按照 key/value 进行序列化
+
+Ajax 全局事件 ajaxStart(callback)  ajaxStop(callback) ajaxComplete(callback) ajaxError(callback) ajaxSend(callback) ajaxSuccess(callback)
+$('#loading').ajaxStart(function () { $(this).show(); }); 
+如果 $.ajax(options); 的 global 设置成 false 那么这些全局事件不会被触发
+
+编写自己的 jquery 插件
+插件种类：封装对象方法插件（用于对选择器选取的 jquery 对象进行操作，类似 appendTo()），封装全局函数插件（类似 ajax()），选择器插件
+编写插件要点：文件名 jquery.插件名.js；对象方法附到 jQuery.fn 上，全局函数附到 jQuery 上；插件内部 this 指向通过选择器获取的 jQuery 对象；可以通过 this.each 便利所有元素；所有方法和插件应以分号结尾；无特殊情况插件应返回 jQuery 对象；插件内部避免使用 $ 作为别名，应使用 jQuery 全名
+基本结构：
+;(function($) {    // $ 作为匿名函数的形参，前面分号是将自己插件跟其他插件代码隔离开，防止之前的没有分号，解析出错
+    // 插件代码
+})(jQuery);    // () 表示执行匿名函数并将 jQuery 作为实参传递给匿名函数
+jQuery.fn.extend(); 用于扩展对象方法插件； jQuery.extend() 用于扩展全局函数插件和选择器插件
+
+自定义插件实例：对象方法插件
+文件名 jquery.color.js
+;(function($) { 
+    $.fn.extend({
+        "color" : function(value) {   // 入参 value 是有效值就会设置 color 为 value，否则获取第一元素的 color 值
+            return this.css("color", value);
+            // 方法中的 this 指代的是 jQuery 对象，直接调用他的 css 方法
+            // 由于可链接性操作，设置完 color 以后应该返回 this，所以应该是 return this;
+            // 而 css 方法也返回了this 所以简写成 return this.css("color", value);
+        }
+    });
+})(jQuery); 
+
+<html>
+    <head>
+        <script src='jquery-3.3.1.js' type="text/javascript"></script>
+        <script src='jquery.color.js' type="text/javascript"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var $all = $('#d1').color("red");
+            });
+        </script>
+    </head>
+    <body>
+        <div id="d1">div1</div>
+        <div id="d2">div2</div>
+    </body>
+</html>
+
+自定义插件实例：全局函数插件
+文件名 jquery.trim.js
+;(function($) { 
+    $.extend({
+        "ltrim" : function(text) {
+            return (text || '').replace(/^\s+/g, '');
+        },
+        "rtrim" : function(text) {
+            return (text || '').replace(/\s+$/g, '');
+        }
+    });
+})(jQuery); 
+
+<html>
+    <head>
+        <script src='jquery-3.3.1.js' type="text/javascript"></script>
+        <script src='jquery.trim.js' type="text/javascript"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var l = '   3';
+                var r = '3   ';
+                alert('|' + l + '|' + $.ltrim(l) + '|');
+                alert('|' + r + '|' + $.rtrim(r) + '|');
+            });
+        </script>
+    </head>
+</html>
